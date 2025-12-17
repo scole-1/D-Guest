@@ -6,18 +6,14 @@ const notion = new Client({
 
 const DATABASE_ID = process.env.NOTION_DATABASE_ID;
 
-export const handler = async (event) => {
-  const query = event.queryStringParameters?.query?.trim() || "";
+export async function handler(event) {
+  if (event.httpMethod !== "GET") {
+    return { statusCode: 405, body: "Method Not Allowed" };
+  }
 
+  const query = event.queryStringParameters?.query?.trim();
   if (!query) {
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
-      body: JSON.stringify([])
-    };
+    return { statusCode: 200, body: JSON.stringify([]) };
   }
 
   try {
@@ -40,20 +36,12 @@ export const handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
       body: JSON.stringify(guests)
     };
   } catch (err) {
     return {
       statusCode: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      },
-      body: JSON.stringify({ error: err.message })
+      body: JSON.stringify({ error: "Search failed" })
     };
   }
-};
+}

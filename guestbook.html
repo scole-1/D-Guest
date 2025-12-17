@@ -1,298 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Digital Guestbook</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<style>
-		body {
-			font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-			margin: 0;
-			padding: 0;
-			background: #111827;
-			color: #F9FAFB;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			min-height: 100vh;
-		}
-		.container {
-			width: 100%;
-			max-width: 480px;
-			padding: 24px;
-			box-sizing: border-box;
-		}
-		h1, h2 {
-			text-align: center;
-			margin-bottom: 16px;
-		}
-		button {
-			width: 100%;
-			padding: 14px 18px;
-			margin: 8px 0;
-			border-radius: 999px;
-			border: none;
-			font-size: 16px;
-			font-weight: 600;
-			cursor: pointer;
-		}
-		button.primary {
-			background: #22C55E;
-			color: #022C22;
-		}
-		button.secondary {
-			background: #111827;
-			color: #E5E7EB;
-			border: 1px solid #4B5563;
-		}
-		button:disabled {
-			opacity: 0.5;
-			cursor: default;
-		}
-		.screen {
-			display: none;
-		}
-		.screen.active {
-			display: block;
-		}
-		.card {
-			background: #020617;
-			border-radius: 16px;
-			padding: 20px;
-			box-shadow: 0 20px 45px rgba(0,0,0,0.6);
-		}
-		label {
-			display: block;
-			margin: 8px 0 4px;
-			font-size: 14px;
-		}
-		input[type="text"] {
-			width: 100%;
-			padding: 10px 12px;
-			border-radius: 999px;
-			border: 1px solid #4B5563;
-			background: #020617;
-			color: #F9FAFB;
-			box-sizing: border-box;
-		}
-		.thumb-preview {
-			width: 100%;
-			max-height: 260px;
-			object-fit: contain;
-			border-radius: 12px;
-			margin: 12px 0;
-			background: #020617;
-		}
-		.notice {
-			font-size: 12px;
-			color: #9CA3AF;
-			text-align: center;
-			margin-top: 8px;
-		}
-		.list-item {
-			padding: 10px 14px;
-			border-radius: 999px;
-			border: 1px solid #4B5563;
-			margin: 4px 0;
-			cursor: pointer;
-		}
-		.list-item:hover {
-			background: #111827;
-		}
-		.center {
-			text-align: center;
-		}
-	</style>
+<meta charset="UTF-8" />
+<title>Digital Guestbook</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+body {
+  font-family: system-ui, sans-serif;
+  background: #111827;
+  color: #f9fafb;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+}
+.card {
+  background: #020617;
+  border-radius: 16px;
+  padding: 20px;
+}
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  border-radius: 999px;
+  border: none;
+  font-size: 16px;
+}
+.primary {
+  background: #22c55e;
+  color: #022c22;
+}
+.secondary {
+  background: transparent;
+  border: 1px solid #4b5563;
+  color: #e5e7eb;
+}
+input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 999px;
+  border: 1px solid #4b5563;
+  background: #020617;
+  color: white;
+}
+.screen { display: none; }
+.screen.active { display: block; }
+.list-item {
+  padding: 10px;
+  border: 1px solid #4b5563;
+  border-radius: 999px;
+  margin-top: 6px;
+  cursor: pointer;
+}
+img {
+  max-width: 100%;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+</style>
 </head>
+
 <body>
 <div class="container">
-	<div id="screen-main" class="screen active">
-		<div class="card">
-			<h1>Digital Guestbook</h1>
-			<p class="center">Please choose how you want to sign.</p>
-			<button class="primary" onclick="goToScreen('screen-photo')">
-				Take Photo to Sign
-			</button>
-			<button class="secondary" onclick="goToScreen('screen-search')">
-				Search Name (No Photo)
-			</button>
-		</div>
-	</div>
 
-	<div id="screen-photo" class="screen">
-		<div class="card">
-			<h2>Take a Photo</h2>
-			<input id="photo-input" type="file" accept="image/*" capture="environment" style="display:none" onchange="onPhotoSelected(event)" />
-			<button class="primary" onclick="document.getElementById('photo-input').click()">
-				Open Camera / Gallery
-			</button>
-			<img id="photo-preview" class="thumb-preview" style="display:none" />
-			<div id="photo-form" style="display:none">
-				<label for="photo-name">Your Name</label>
-				<input id="photo-name" type="text" placeholder="Type your name" />
-				<button class="primary" style="margin-top:12px" onclick="submitPhoto()" id="photo-submit-btn">
-					Submit
-				</button>
-				<button class="secondary" onclick="resetAndBackToMain()" style="margin-top:4px">
-					Cancel
-				</button>
-				<p class="notice">By tapping submit, you agree this photo will be stored with your guestbook entry.</p>
-			</div>
-		</div>
-	</div>
+<div id="main" class="screen active card">
+  <h2>Digital Guestbook</h2>
+  <button class="primary" onclick="show('photo')">Sign with Photo</button>
+  <button class="secondary" onclick="show('search')">Search Name</button>
+</div>
 
-	<div id="screen-search" class="screen">
-		<div class="card">
-			<h2>Find Your Name</h2>
-			<label for="search-input">Type your name</label>
-			<input id="search-input" type="text" placeholder="Start typing..." oninput="onSearchChange()" />
-			<div id="search-results" style="margin-top:12px; max-height:260px; overflow-y:auto;"></div>
-			<button class="secondary" onclick="resetAndBackToMain()" style="margin-top:12px">
-				Back
-			</button>
-		</div>
-	</div>
+<div id="photo" class="screen card">
+  <input type="file" accept="image/*" onchange="onPhoto(event)">
+  <img id="preview" />
+  <input id="photoName" placeholder="Your name">
+  <button class="primary" onclick="submitPhoto()">Submit</button>
+  <button class="secondary" onclick="back()">Back</button>
+</div>
 
-	<div id="screen-thanks" class="screen">
-		<div class="card">
-			<h2 class="center">Thank you!</h2>
-			<p class="center">Your visit has been recorded.</p>
-			<button class="primary" onclick="resetAndBackToMain()" style="margin-top:12px">
-				Done
-			</button>
-		</div>
-	</div>
+<div id="search" class="screen card">
+  <input id="searchInput" placeholder="Type your name" oninput="searchGuest()">
+  <div id="results"></div>
+  <button class="secondary" onclick="back()">Back</button>
+</div>
+
+<div id="thanks" class="screen card">
+  <h2>Thank you ❤️</h2>
+  <button class="primary" onclick="back()">Done</button>
+</div>
+
 </div>
 
 <script>
-	const BACKEND_BASE_URL = "/.netlify/functions";
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
 
-	function goToScreen(id) {
-		document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-		document.getElementById(id).classList.add('active');
-	}
+function back() {
+  location.reload();
+}
 
-	function resetAndBackToMain() {
-		document.getElementById('photo-input').value = "";
-		const nameInput = document.getElementById('photo-name');
-		if (nameInput) nameInput.value = "";
-		document.getElementById('photo-preview').style.display = "none";
-		document.getElementById('photo-form').style.display = "none";
-		document.getElementById('search-input').value = "";
-		document.getElementById('search-results').innerHTML = "";
-		goToScreen('screen-main');
-	}
+let photoData = null;
 
-	let selectedPhotoFile = null;
+function onPhoto(e) {
+  const file = e.target.files[0];
+  const reader = new FileReader();
+  reader.onload = () => {
+    photoData = reader.result;
+    document.getElementById("preview").src = photoData;
+  };
+  reader.readAsDataURL(file);
+}
 
-	function onPhotoSelected(event) {
-		const file = event.target.files[0];
-		if (!file) return;
-		selectedPhotoFile = file;
+async function submitPhoto() {
+  const name = document.getElementById("photoName").value.trim();
+  if (!name || !photoData) {
+    alert("Missing name or photo");
+    return;
+  }
 
-		const reader = new FileReader();
-		reader.onload = function(e) {
-			const img = document.getElementById('photo-preview');
-			img.src = e.target.result;
-			img.style.display = "block";
-			document.getElementById('photo-form').style.display = "block";
-		};
-		reader.readAsDataURL(file);
-	}
+  await fetch("/.netlify/functions/sign-with-photo", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, photo: photoData })
+  });
 
-	async function submitPhoto() {
-		const name = document.getElementById('photo-name').value.trim();
-		if (!name) {
-			alert("Please enter your name.");
-			return;
-		}
-		if (!selectedPhotoFile) {
-			alert("Please choose a photo.");
-			return;
-		}
+  show("thanks");
+}
 
-		const btn = document.getElementById('photo-submit-btn');
-		btn.disabled = true;
-		btn.textContent = "Saving...";
+let timer;
+function searchGuest() {
+  clearTimeout(timer);
+  timer = setTimeout(async () => {
+    const q = document.getElementById("searchInput").value;
+    if (!q) return;
 
-		try {
-			const formData = new FormData();
-			formData.append("name", name);
-			formData.append("photo", selectedPhotoFile);
+    const res = await fetch("/.netlify/functions/search-guest?query=" + q);
+    const data = await res.json();
 
-			const res = await fetch(BACKEND_BASE_URL + "/sign-with-photo", {
-				method: "POST",
-				body: formData
-			});
+    const box = document.getElementById("results");
+    box.innerHTML = "";
 
-			if (!res.ok) {
-				throw new Error("Failed to save. Please try again.");
-			}
-			goToScreen('screen-thanks');
-		} catch (err) {
-			console.error(err);
-			alert(err.message || "Error saving, please call staff.");
-		} finally {
-			btn.disabled = false;
-			btn.textContent = "Submit";
-		}
-	}
+    data.forEach(g => {
+      const div = document.createElement("div");
+      div.className = "list-item";
+      div.textContent = g.name + (g.signed ? " ✓" : "");
+      div.onclick = () => markSigned(g.id);
+      box.appendChild(div);
+    });
+  }, 300);
+}
 
-	let searchTimeout = null;
-
-	function onSearchChange() {
-		clearTimeout(searchTimeout);
-		const term = document.getElementById('search-input').value.trim();
-		if (!term) {
-			document.getElementById('search-results').innerHTML = "";
-			return;
-		}
-		searchTimeout = setTimeout(() => searchGuest(term), 300);
-	}
-
-	async function searchGuest(term) {
-		const resBox = document.getElementById('search-results');
-		resBox.innerHTML = "<p class='notice'>Searching...</p>";
-		try {
-			const res = await fetch(BACKEND_BASE_URL + "/search-guest?query=" + encodeURIComponent(term));
-			if (!res.ok) throw new Error("Search failed");
-
-			const data = await res.json(); // [{id, name, signed}]
-			if (!data.length) {
-				resBox.innerHTML = "<p class='notice'>No matching name. Please ask staff.</p>";
-				return;
-			}
-			resBox.innerHTML = "";
-			data.forEach(g => {
-				const div = document.createElement('div');
-				div.className = "list-item";
-				div.textContent = g.name + (g.signed ? " (already signed)" : "");
-				div.onclick = () => confirmMarkSigned(g);
-				resBox.appendChild(div);
-			});
-		} catch (err) {
-			console.error(err);
-			resBox.innerHTML = "<p class='notice'>Error searching. Please ask staff.</p>";
-		}
-	}
-
-	async function confirmMarkSigned(guest) {
-		const ok = confirm(`Mark "${guest.name}" as signed (no photo)?`);
-		if (!ok) return;
-
-		try {
-			const res = await fetch(BACKEND_BASE_URL + "/mark-signed", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ id: guest.id })
-			});
-			if (!res.ok) throw new Error("Failed to update");
-			goToScreen('screen-thanks');
-		} catch (err) {
-			console.error(err);
-			alert("Error updating. Please ask staff.");
-		}
-	}
+async function markSigned(id) {
+  await fetch("/.netlify/functions/mark-signed", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id })
+  });
+  show("thanks");
+}
 </script>
 </body>
 </html>

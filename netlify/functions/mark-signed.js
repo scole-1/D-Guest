@@ -4,19 +4,14 @@ const notion = new Client({
   auth: process.env.NOTION_TOKEN
 });
 
-export const handler = async (event) => {
+export async function handler(event) {
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405 };
+    return { statusCode: 405, body: "Method Not Allowed" };
   }
 
   const { id } = JSON.parse(event.body || "{}");
-
   if (!id) {
-    return {
-      statusCode: 400,
-      headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({ error: "Missing id" })
-    };
+    return { statusCode: 400, body: "Missing ID" };
   }
 
   try {
@@ -32,14 +27,12 @@ export const handler = async (event) => {
 
     return {
       statusCode: 200,
-      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify({ ok: true })
     };
   } catch (err) {
     return {
       statusCode: 500,
-      headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({ error: err.message })
+      body: JSON.stringify({ error: "Update failed" })
     };
   }
-};
+}

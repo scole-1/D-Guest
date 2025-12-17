@@ -6,19 +6,14 @@ const notion = new Client({
 
 const DATABASE_ID = process.env.NOTION_DATABASE_ID;
 
-export const handler = async (event) => {
+export async function handler(event) {
   if (event.httpMethod !== "POST") {
-    return { statusCode: 405 };
+    return { statusCode: 405, body: "Method Not Allowed" };
   }
 
-  const { name, photoBase64 } = JSON.parse(event.body || "{}");
-
-  if (!name || !photoBase64) {
-    return {
-      statusCode: 400,
-      headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({ error: "Missing name or photo" })
-    };
+  const { name, photo } = JSON.parse(event.body || "{}");
+  if (!name || !photo) {
+    return { statusCode: 400, body: "Missing data" };
   }
 
   try {
@@ -33,21 +28,19 @@ export const handler = async (event) => {
           date: { start: new Date().toISOString() }
         },
         "Photo URL": {
-          rich_text: [{ text: { content: photoBase64 } }]
+          rich_text: [{ text: { content: photo } }]
         }
       }
     });
 
     return {
       statusCode: 200,
-      headers: { "Access-Control-Allow-Origin": "*" },
       body: JSON.stringify({ ok: true })
     };
   } catch (err) {
     return {
       statusCode: 500,
-      headers: { "Access-Control-Allow-Origin": "*" },
-      body: JSON.stringify({ error: err.message })
+      body: JSON.stringify({ error: "Save failed" })
     };
   }
-};
+}
