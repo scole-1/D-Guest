@@ -2,171 +2,286 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Digital Guestbook</title>
+<title>Wedding Guestbook</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <style>
+:root {
+  --accent: #22c55e;
+}
+
+* { box-sizing: border-box; }
+
 body {
-  font-family: system-ui, sans-serif;
-  background: #111827;
-  color: #f9fafb;
   margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.6)),
+    url("https://images.unsplash.com/photo-1520854221256-17451cc331bf");
+  color: #fff;
   min-height: 100vh;
 }
+
 .container {
-  width: 100%;
-  max-width: 420px;
-  padding: 20px;
+  max-width: 480px;
+  margin: auto;
+  padding: 24px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
 }
+
 .card {
-  background: #020617;
-  border-radius: 16px;
-  padding: 20px;
+  width: 100%;
+  background: rgba(2,6,23,.85);
+  backdrop-filter: blur(12px);
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.6);
+  animation: fadeIn .4s ease;
 }
+
+h1, h2 {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+p.center { text-align: center; opacity: .9; }
+
 button {
   width: 100%;
-  padding: 14px;
-  margin-top: 10px;
+  padding: 16px;
   border-radius: 999px;
   border: none;
   font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .15s ease, opacity .15s ease;
 }
+
+button:active { transform: scale(.96); }
+
 .primary {
-  background: #22c55e;
+  background: var(--accent);
   color: #022c22;
 }
+
 .secondary {
   background: transparent;
-  border: 1px solid #4b5563;
-  color: #e5e7eb;
+  border: 1px solid rgba(255,255,255,.3);
+  color: #fff;
 }
-input {
-  width: 100%;
-  padding: 10px;
-  margin-top: 6px;
-  border-radius: 999px;
-  border: 1px solid #4b5563;
-  background: #020617;
-  color: white;
-}
-.screen { display: none; }
-.screen.active { display: block; }
-.list-item {
-  padding: 10px;
-  border: 1px solid #4b5563;
-  border-radius: 999px;
-  margin-top: 6px;
+
+.small-link {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-size: 13px;
+  opacity: .5;
   cursor: pointer;
 }
-img {
-  max-width: 100%;
-  border-radius: 12px;
+
+.small-link:hover { opacity: .9; }
+
+input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(0,0,0,.4);
+  color: #fff;
+  font-size: 15px;
+}
+
+img.preview {
+  width: 100%;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  max-height: 260px;
+  object-fit: cover;
+}
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+.notice {
+  text-align: center;
+  font-size: 13px;
+  opacity: .7;
   margin-top: 10px;
+}
+
+.list-item {
+  padding: 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.25);
+  margin: 6px 0;
+  cursor: pointer;
+}
+
+.list-item:hover {
+  background: rgba(255,255,255,.08);
+}
+
+#wallBtn {
+  position: fixed;
+  bottom: 14px;
+  left: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0,0,0,.45);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>
 </head>
 
 <body>
+
+<button id="wallBtn" onclick="changeWallpaper()">🖼️</button>
+
 <div class="container">
 
-<div id="main" class="screen active card">
-  <h2>Digital Guestbook</h2>
-  <button class="primary" onclick="show('photo')">Sign with Photo</button>
-  <button class="secondary" onclick="show('search')">Search Name</button>
+<!-- MAIN -->
+<div id="main" class="screen active">
+  <div class="card">
+    <div class="small-link" onclick="go('search')">Skip</div>
+    <h1>Welcome</h1>
+    <p class="center">Capture a beautiful memory with us</p>
+    <button class="primary" onclick="openCamera()">📸 Take Photo</button>
+  </div>
 </div>
 
-<div id="photo" class="screen card">
-  <input type="file" accept="image/*" onchange="onPhoto(event)">
-  <img id="preview" />
-  <input id="photoName" placeholder="Your name">
-  <button class="primary" onclick="submitPhoto()">Submit</button>
-  <button class="secondary" onclick="back()">Back</button>
+<!-- PHOTO -->
+<div id="photo" class="screen">
+  <div class="card">
+    <h2>Your Photo</h2>
+    <img id="photoPreview" class="preview" />
+    <input id="nameInput" placeholder="Your name" />
+    <button class="primary" onclick="submitPhoto()" style="margin-top:14px">Save</button>
+    <button class="secondary" onclick="go('main')" style="margin-top:8px">Cancel</button>
+  </div>
 </div>
 
-<div id="search" class="screen card">
-  <input id="searchInput" placeholder="Type your name" oninput="searchGuest()">
-  <div id="results"></div>
-  <button class="secondary" onclick="back()">Back</button>
+<!-- SEARCH -->
+<div id="search" class="screen">
+  <div class="card">
+    <h2>Find Your Name</h2>
+    <input id="searchInput" placeholder="Type your name" oninput="searchGuest()" />
+    <div id="results"></div>
+    <button class="secondary" onclick="go('main')" style="margin-top:12px">Back</button>
+  </div>
 </div>
 
-<div id="thanks" class="screen card">
-  <h2>Thank you ❤️</h2>
-  <button class="primary" onclick="back()">Done</button>
+<!-- THANK YOU -->
+<div id="thanks" class="screen">
+  <div class="card">
+    <img id="thanksPhoto" class="preview" />
+    <p class="center">
+      Thank you for being part of our story 💍<br />
+      Your presence means the world to us.
+    </p>
+  </div>
 </div>
 
 </div>
+
+<input type="file" id="cameraInput" accept="image/*" capture="environment" hidden />
 
 <script>
-function show(id) {
+const API_BASE = "/.netlify/functions";
+
+let photoFile = null;
+
+const wallpapers = [
+  "https://images.unsplash.com/photo-1520854221256-17451cc331bf",
+  "https://images.unsplash.com/photo-1519741497674-611481863552",
+  "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e"
+];
+let wallIndex = 0;
+
+function changeWallpaper() {
+  wallIndex = (wallIndex + 1) % wallpapers.length;
+  document.body.style.backgroundImage =
+    `linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.6)),url('${wallpapers[wallIndex]}')`;
+}
+
+function go(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
-function back() {
-  location.reload();
+function openCamera() {
+  document.getElementById("cameraInput").click();
 }
 
-let photoData = null;
-
-function onPhoto(e) {
-  const file = e.target.files[0];
+document.getElementById("cameraInput").onchange = e => {
+  photoFile = e.target.files[0];
   const reader = new FileReader();
   reader.onload = () => {
-    photoData = reader.result;
-    document.getElementById("preview").src = photoData;
+    document.getElementById("photoPreview").src = reader.result;
+    go("photo");
   };
-  reader.readAsDataURL(file);
-}
+  reader.readAsDataURL(photoFile);
+};
 
 async function submitPhoto() {
-  const name = document.getElementById("photoName").value.trim();
-  if (!name || !photoData) {
-    alert("Missing name or photo");
-    return;
+  const name = nameInput.value.trim();
+  if (!name || !photoFile) return alert("Please enter name");
+
+  const fd = new FormData();
+  fd.append("name", name);
+  fd.append("photo", photoFile);
+
+  await fetch(API_BASE + "/sign-with-photo", { method: "POST", body: fd });
+  showThanks(photoPreview.src);
+}
+
+async function searchGuest() {
+  const q = searchInput.value.trim();
+  if (!q) return results.innerHTML = "";
+  const res = await fetch(API_BASE + "/search-guest?query=" + q);
+  const data = await res.json();
+  results.innerHTML = "";
+  data.forEach(g => {
+    const d = document.createElement("div");
+    d.className = "list-item";
+    d.textContent = g.name;
+    d.onclick = async () => {
+      await fetch(API_BASE + "/mark-signed", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: g.id })
+      });
+      showThanks(null);
+    };
+    results.appendChild(d);
+  });
+}
+
+function showThanks(img) {
+  if (img) {
+    thanksPhoto.src = img;
+    thanksPhoto.style.display = "block";
+  } else {
+    thanksPhoto.style.display = "none";
   }
-
-  await fetch("/.netlify/functions/sign-with-photo", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, photo: photoData })
-  });
-
-  show("thanks");
-}
-
-let timer;
-function searchGuest() {
-  clearTimeout(timer);
-  timer = setTimeout(async () => {
-    const q = document.getElementById("searchInput").value;
-    if (!q) return;
-
-    const res = await fetch("/.netlify/functions/search-guest?query=" + q);
-    const data = await res.json();
-
-    const box = document.getElementById("results");
-    box.innerHTML = "";
-
-    data.forEach(g => {
-      const div = document.createElement("div");
-      div.className = "list-item";
-      div.textContent = g.name + (g.signed ? " ✓" : "");
-      div.onclick = () => markSigned(g.id);
-      box.appendChild(div);
-    });
-  }, 300);
-}
-
-async function markSigned(id) {
-  await fetch("/.netlify/functions/mark-signed", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id })
-  });
-  show("thanks");
+  go("thanks");
+  setTimeout(() => go("main"), 3500);
 }
 </script>
+
 </body>
 </html>
