@@ -3,17 +3,25 @@
 <head>
 <meta charset="UTF-8" />
 <title>Wedding Guestbook</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
 <style>
 :root {
   --accent: #22c55e;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
 
 body {
-  margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background-size: cover;
   background-position: center;
@@ -22,26 +30,31 @@ body {
     linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.6)),
     url("https://images.unsplash.com/photo-1520854221256-17451cc331bf");
   color: #fff;
-  min-height: 100vh;
+  overflow: hidden;
 }
 
 .container {
-  max-width: 480px;
+  max-width: 520px;
   margin: auto;
   padding: 24px;
-  min-height: 100vh;
+  height: 100%;
   display: flex;
   align-items: center;
 }
 
 .card {
   width: 100%;
-  background: rgba(2,6,23,.85);
-  backdrop-filter: blur(12px);
-  border-radius: 22px;
-  padding: 24px;
-  box-shadow: 0 20px 40px rgba(0,0,0,.6);
-  animation: fadeIn .4s ease;
+  background: rgba(2,6,23,.88);
+  backdrop-filter: blur(14px);
+  border-radius: 24px;
+  padding: 26px;
+  box-shadow: 0 25px 50px rgba(0,0,0,.6);
+  animation: enter .45s ease;
+}
+
+@keyframes enter {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 h1, h2 {
@@ -49,20 +62,54 @@ h1, h2 {
   margin-bottom: 16px;
 }
 
-p.center { text-align: center; opacity: .9; }
+p.center {
+  text-align: center;
+  opacity: .9;
+}
 
 button {
   width: 100%;
-  padding: 16px;
+  padding: 18px;
   border-radius: 999px;
   border: none;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
-  transition: transform .15s ease, opacity .15s ease;
+  position: relative;
+  overflow: hidden;
+  transition: transform .15s ease;
 }
 
-button:active { transform: scale(.96); }
+button:active {
+  transform: scale(.96);
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  background: rgba(255,255,255,.35);
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+button:active::after {
+  animation: ripple .5s ease;
+}
+
+@keyframes ripple {
+  from {
+    transform: scale(0);
+    opacity: .7;
+  }
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
 
 .primary {
   background: var(--accent);
@@ -71,41 +118,40 @@ button:active { transform: scale(.96); }
 
 .secondary {
   background: transparent;
-  border: 1px solid rgba(255,255,255,.3);
+  border: 1px solid rgba(255,255,255,.35);
   color: #fff;
 }
 
-.small-link {
+.small-skip {
   position: absolute;
   top: 14px;
   right: 16px;
   font-size: 13px;
-  opacity: .5;
+  opacity: .45;
   cursor: pointer;
 }
 
-.small-link:hover { opacity: .9; }
+.small-skip:hover {
+  opacity: .85;
+}
 
 input {
   width: 100%;
-  padding: 14px 18px;
+  padding: 15px 18px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.25);
-  background: rgba(0,0,0,.4);
+  border: 1px solid rgba(255,255,255,.3);
+  background: rgba(0,0,0,.45);
   color: #fff;
-  font-size: 15px;
+  font-size: 16px;
 }
 
-img.preview {
+.preview {
   width: 100%;
-  border-radius: 16px;
-  margin-bottom: 12px;
   max-height: 260px;
   object-fit: cover;
+  border-radius: 18px;
+  margin-bottom: 14px;
 }
-
-.screen { display: none; }
-.screen.active { display: block; }
 
 .notice {
   text-align: center;
@@ -115,15 +161,23 @@ img.preview {
 }
 
 .list-item {
-  padding: 14px;
+  padding: 15px;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.25);
+  border: 1px solid rgba(255,255,255,.3);
   margin: 6px 0;
   cursor: pointer;
 }
 
 .list-item:hover {
   background: rgba(255,255,255,.08);
+}
+
+.screen {
+  display: none;
+}
+
+.screen.active {
+  display: block;
 }
 
 #wallBtn {
@@ -140,11 +194,6 @@ img.preview {
   cursor: pointer;
   backdrop-filter: blur(6px);
 }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 </style>
 </head>
 
@@ -157,7 +206,7 @@ img.preview {
 <!-- MAIN -->
 <div id="main" class="screen active">
   <div class="card">
-    <div class="small-link" onclick="go('search')">Skip</div>
+    <div class="small-skip" onclick="go('search')">Skip</div>
     <h1>Welcome</h1>
     <p class="center">Capture a beautiful memory with us</p>
     <button class="primary" onclick="openCamera()">📸 Take Photo</button>
@@ -170,7 +219,7 @@ img.preview {
     <h2>Your Photo</h2>
     <img id="photoPreview" class="preview" />
     <input id="nameInput" placeholder="Your name" />
-    <button class="primary" onclick="submitPhoto()" style="margin-top:14px">Save</button>
+    <button class="primary" onclick="submitPhoto()" style="margin-top:14px">Done</button>
     <button class="secondary" onclick="go('main')" style="margin-top:8px">Cancel</button>
   </div>
 </div>
@@ -201,15 +250,20 @@ img.preview {
 <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden />
 
 <script>
+/* CONFIG */
 const API_BASE = "/.netlify/functions";
 
+/* STATE */
 let photoFile = null;
+let locked = false;
 
+/* WALLPAPER */
 const wallpapers = [
   "https://images.unsplash.com/photo-1520854221256-17451cc331bf",
   "https://images.unsplash.com/photo-1519741497674-611481863552",
   "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e"
 ];
+
 let wallIndex = 0;
 
 function changeWallpaper() {
@@ -218,28 +272,43 @@ function changeWallpaper() {
     `linear-gradient(rgba(0,0,0,.6),rgba(0,0,0,.6)),url('${wallpapers[wallIndex]}')`;
 }
 
+setInterval(changeWallpaper, 180000);
+
+/* NAV */
 function go(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
   document.getElementById(id).classList.add("active");
 }
 
+/* CAMERA */
 function openCamera() {
+  if (locked) return;
   document.getElementById("cameraInput").click();
 }
 
-document.getElementById("cameraInput").onchange = e => {
-  photoFile = e.target.files[0];
-  const reader = new FileReader();
-  reader.onload = () => {
-    document.getElementById("photoPreview").src = reader.result;
+cameraInput.onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  photoFile = file;
+  new Audio("https://actions.google.com/sounds/v1/camera/camera_shutter_click_01.mp3").play();
+  const r = new FileReader();
+  r.onload = () => {
+    photoPreview.src = r.result;
     go("photo");
   };
-  reader.readAsDataURL(photoFile);
+  r.readAsDataURL(file);
 };
 
+/* SUBMIT */
 async function submitPhoto() {
+  if (locked) return;
+  locked = true;
+
   const name = nameInput.value.trim();
-  if (!name || !photoFile) return alert("Please enter name");
+  if (!name || !photoFile) {
+    locked = false;
+    return alert("Please enter your name");
+  }
 
   const fd = new FormData();
   fd.append("name", name);
@@ -249,17 +318,22 @@ async function submitPhoto() {
   showThanks(photoPreview.src);
 }
 
+/* SEARCH */
 async function searchGuest() {
   const q = searchInput.value.trim();
   if (!q) return results.innerHTML = "";
-  const res = await fetch(API_BASE + "/search-guest?query=" + q);
+
+  const res = await fetch(API_BASE + "/search-guest?query=" + encodeURIComponent(q));
   const data = await res.json();
   results.innerHTML = "";
+
   data.forEach(g => {
     const d = document.createElement("div");
     d.className = "list-item";
     d.textContent = g.name;
     d.onclick = async () => {
+      if (locked) return;
+      locked = true;
       await fetch(API_BASE + "/mark-signed", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -271,15 +345,26 @@ async function searchGuest() {
   });
 }
 
-function showThanks(img) {
-  if (img) {
-    thanksPhoto.src = img;
+/* THANK YOU */
+function showThanks(photo) {
+  if (photo) {
+    thanksPhoto.src = photo;
     thanksPhoto.style.display = "block";
   } else {
     thanksPhoto.style.display = "none";
   }
   go("thanks");
-  setTimeout(() => go("main"), 3500);
+  setTimeout(resetAll, 3800);
+}
+
+function resetAll() {
+  locked = false;
+  photoFile = null;
+  cameraInput.value = "";
+  nameInput.value = "";
+  searchInput.value = "";
+  results.innerHTML = "";
+  go("main");
 }
 </script>
 
